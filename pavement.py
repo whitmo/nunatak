@@ -56,7 +56,7 @@ setup(name='nunatak',
 curdir = os.path.abspath(os.curdir)
 options(
     virtualenv=Bunch(script_name="build_stack",
-                     packages_to_install=[],
+                     packages_to_install=['supervisor'],
                      paver_command_line="after_bootstrap"
                      ),
 #    sphinx=Bunch(docroot="src/trunk/docsrc",
@@ -71,6 +71,11 @@ def auto():
     cp.read("stack-conf.cfg")
     options(config=cp,
             env=env)
+
+@task
+@needs(['auto'])
+def after_bootstrap():
+    info("not implemented")
 
 @task
 def build_stack():

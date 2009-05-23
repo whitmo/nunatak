@@ -1,0 +1,32 @@
+[inet_http_server]
+port=127.0.0.1:9999
+username=admin
+password=admin
+
+[supervisord]
+logfile=${buildout:log-dir}/supervisord.log
+logfile_maxbytes=50MB
+logfile_backups=10 
+loglevel=info
+pidfile=${buildout:var-dir}/supervisord.pid
+nodaemon=false
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=${supervisor-conf:serverurl}
+
+[program:grok]
+command = ${app:location}/runzope -C ${buildout:parts-directory}/zopectl/zope.conf
+priority = 10
+redirect_stderr = true
+environment=DYLD_LIBRARY_PATH=${libgeos:location}/lib:${libspatialindex:location}/lib
+            LD_LIBRARY_PATH=${libgeos:location}/lib
+
+[program:nginx]
+command = ${nginx:location}/sbin/nginx -c ${buildout:etc-dir}/nginx.conf
+priority = 10
+redirect_stderr = true
+
+

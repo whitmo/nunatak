@@ -1,0 +1,33 @@
+[inet_http_server]
+port={{host}}:{{port}}
+username={{user}}
+password={{pw}}
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisord]
+logfile={{log-dir}}/supervisord.log
+logfile_maxbytes={{logfile_max}}
+logfile_backups={{logfile_backups}}
+loglevel=info
+pidfile={{var_dir}}/supervisord.pid
+nodaemon=false
+
+[supervisorctl]
+serverurl={{serverurl}}
+
+[program:postgres]
+command = bin/pg_ctl -D {{pgdata_dir}} -l {{pg_log}} start
+user=postgres
+priority = 10
+redirect_stderr = true
+
+[program:proxy]
+
+
+[program:geoserver]
+command = ${geoserver:location}/bin/startup.sh
+priority = 10
+redirect_stderr = true
+environment=JAVA_HOME=${java:home},GEOSERVER_HOME=${geoserver:location}

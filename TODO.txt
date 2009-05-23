@@ -1,0 +1,22 @@
+======
+ TODO
+======
+
+scratch pad for stuff to do
+
+next
+====
+
+* hook up tempita templates
+
+* hook up supervisord launch
+
+* wrap launcher script into ogsuite_ctl
+
+* initialize db for postgis
+
+* configure geoserver to see postgis
+
+* js download, configuration and build
+
+* test proxy

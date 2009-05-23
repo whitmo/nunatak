@@ -57,7 +57,10 @@ setup(name='nunatak',
 curdir = os.path.abspath(os.curdir)
 options(
     virtualenv=Bunch(script_name="build_stack",
-                     packages_to_install=['supervisor'],
+                     packages_to_install=['supervisor',
+                                          'tempita',
+                                          'paste',
+                                          'jstools'],
                      paver_command_line="after_bootstrap"
                      ),
 #    sphinx=Bunch(docroot="src/trunk/docsrc",
@@ -73,7 +76,9 @@ def auto():
     if env is None:
         env = path("./").abspath()
     cp = ConfigParser()
-
+    # TODO: read stack-config from nunatak/resource dir
+    # if no stack config exists
+    
     #@@ make an option??
     cp.read(DEF_CONF)
     options(config=cp,

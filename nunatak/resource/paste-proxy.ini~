@@ -1,4 +1,0 @@
-[server:main]
-use = egg:Paste#http
-host = 127.0.0.1
-port = %(http_port)s

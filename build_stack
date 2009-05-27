@@ -958,6 +958,7 @@ def after_install(options, home_dir):
     subprocess.call([join(bin_dir, 'easy_install'), 'paver==1.0.1'])
     subprocess.call([join(bin_dir, 'easy_install'), 'supervisor'])
     subprocess.call([join(bin_dir, 'easy_install'), 'tempita'])
+    subprocess.call([join(bin_dir, 'easy_install'), 'pip'])
     subprocess.call([join(bin_dir, 'easy_install'), 'paste'])
     subprocess.call([join(bin_dir, 'easy_install'), 'jstools'])
     subprocess.call([join(bin_dir, 'paver'),'after_bootstrap'])

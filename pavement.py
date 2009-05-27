@@ -105,20 +105,20 @@ def auto(default_conf=DEF_CONF):
 
 
 @task
-@needs(["checkup_application"])
+@needs(["checkup_app"])
 def push_app():
     suite = path("src") / "opengeo-suite"
     with pushd(suite):
         sh("git push origin master")
 
 @task
-@needs(["checkup_application"])
+@needs(["checkup_app"])
 def build_py_deps():
     sh("pip bundle %(path)s/py.bundle -r %(path)s/py-reqs.txt" %dict(path=options.app_resources))
 
 @task
 @needs(["dir_layout"])
-def checkup_application():
+def checkup_app():
     suite = path("src") / "opengeo-suite"
     options(app_resources=suite / "Resources")
     if not suite.exists():

@@ -27,6 +27,8 @@ import tempita
 
 setuputils.install_distutils_tasks()
 
+
+
 version = "0.0"
 
 
@@ -61,6 +63,7 @@ options(
     virtualenv=Bunch(script_name="build_stack",
                      packages_to_install=['supervisor',
                                           'tempita',
+                                          'pip',
                                           'paste',
                                           'jstools'],
                      paver_command_line="after_bootstrap"
@@ -69,7 +72,11 @@ options(
 #                 builddir=path(curdir) / "built")
     )
 
-dist = pkg_resources.get_distribution('nunatak')
+try: 
+    dist = pkg_resources.get_distribution('nunatak')
+except: 
+    dist = '' 
+
 
 def get_resource(fn, kind="filename", prefix="resource", dist='nunatak'):
     getter = getattr(pkg_resources, "resource_%s" %kind, None)

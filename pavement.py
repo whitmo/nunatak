@@ -81,6 +81,8 @@ def get_resource(fn, kind="filename", prefix="resource", dist='nunatak'):
 DEF_CONF = "stack-conf.cfg"
 _c_base = 'proj', 'gdal', 'geos'
 
+
+
 @task
 @needs(["setuptools.develop"]) # puts resources where pkgresources can
                                # find them
@@ -102,12 +104,39 @@ def auto(default_conf=DEF_CONF):
             conf_fp=default_conf)
 
 
+@task
+@needs(["checkup_application"])
+def push_app():
+    suite = path("src") / "opengeo-suite"
+    with pushd(suite):
+        sh("git push origin master")
+
+@task
+@needs(["checkup_application"])
+def build_py_deps():
+    sh("pip bundle %(path)s/py.bundle -r %(path)s/py-reqs.txt" %dict(path=options.app_resources))
+
+@task
+@needs(["dir_layout"])
+def checkup_application():
+    suite = path("src") / "opengeo-suite"
+    options(app_resources=suite / "Resources")
+    if not suite.exists():
+        with pushd("src"): 
+            info("Checking out opengeo suite application")
+            sh("git clone git@github.com:whitmo/opengeo-suite.git")
+        return 
+
+    info("Updating opengeo suite application")
+    with pushd(suite):
+        sh("git pull")
 
 
 @task
 @needs(['auto'])
 def write_supervisor_config():
     import pdb;pdb.set_trace()
+
 
 @task
 @needs(['auto'])

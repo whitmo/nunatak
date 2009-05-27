@@ -16,12 +16,14 @@ from paver.easy import task, options, Bunch
 from paver.setuputils import setup
 from paver.tasks import help, needs
 from setuptools import find_packages
+import pkg_resources
 import os
 import re
 import shutil
 import subprocess
 import getpass
 import pwd
+import tempita
 
 setuputils.install_distutils_tasks()
 
@@ -44,7 +46,7 @@ setup(name='nunatak',
       include_package_data=True,
       zip_safe=False,
       dependency_links=[],
-      install_requires=["sphinx>=0.6.1",
+      install_requires=[#"sphinx>=0.6.1",
                         "PasteDeploy",
                         "Paste",
                         "PasteScript",
@@ -67,30 +69,54 @@ options(
 #                 builddir=path(curdir) / "built")
     )
 
+dist = pkg_resources.get_distribution('nunatak')
+
+def get_resource(fn, kind="filename", prefix="resource", dist='nunatak'):
+    getter = getattr(pkg_resources, "resource_%s" %kind, None)
+    if getter is None:
+        raise ValueError("Not found: resource_%s" %kind)
+    return getter(dist, str(path(prefix) / fn)) 
+
+
 DEF_CONF = "stack-conf.cfg"
 _c_base = 'proj', 'gdal', 'geos'
 
 @task
-def auto():
+@needs(["setuptools.develop"]) # puts resources where pkgresources can
+                               # find them
+def auto(default_conf=DEF_CONF):
     env = os.environ.get('VIRTUAL_ENV')
     if env is None:
         env = path("./").abspath()
     cp = ConfigParser()
-    # TODO: read stack-config from nunatak/resource dir
-    # if no stack config exists
+
+    if not path(default_conf).exists():
+        # write default conf
+        conf = path(get_resource("starter-stack-config.cfg"))
+        conf.copy(path(os.curdir) / default_conf)
     
-    #@@ make an option??
-    cp.read(DEF_CONF)
+    #@@ make an option to allow extension
+    cp.read(default_conf)
     options(config=cp,
             env=env,
-            conf_fp=DEF_CONF)
+            conf_fp=default_conf)
+
+
+
+
+@task
+@needs(['auto'])
+def write_supervisor_config():
+    import pdb;pdb.set_trace()
 
 @task
 @needs(['auto'])
 def after_bootstrap():
     info("under construction")
+    call_task("dir_layout")
     call_task("install_c_base")
     call_task("install_postgis")
+    call_task("write_supervisor_config")
     call_task("save_cfg")
 
 
@@ -110,7 +136,6 @@ def build_stack():
 def install_c_base():
     for pkg in _c_base:
         basic_install(pkg)
-
 
         
 @task
@@ -156,7 +181,7 @@ def get_sources():
             else:
                 source_path = tarball_unpack(tarball, src)
         else:
-            # @@add svn checkup when needed
+            # @@add svn/git checkup when needed
             pass
         options.config.set("sources", pkg, source_path.abspath())
     lpath = path("src/LICENSE.txt")
